@@ -49,6 +49,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const userCollection = client.db("plantNetDB").collection("users");
+    const plantCollection = client.db("plantNetDB").collection("plants");
 
     // Save or update user in DB
     app.post("/users/:email", async (req, res) => {
@@ -96,6 +97,20 @@ async function run() {
       } catch (err) {
         res.status(500).send(err);
       }
+    });
+
+    //save a plant data in db
+    app.post("/plants", verifyToken, async (req, res) => {
+      const plants = req.body;
+      const result = await plantCollection.insertOne(plants);
+      res.send(result);
+    });
+
+    //get all plant data in db
+    app.get("/plants", async (req, res) => {
+      const plants = req.body;
+      const result = await plantCollection.find().toArray();
+      res.send(result);
     });
 
     // Send a ping to confirm a successful connection
